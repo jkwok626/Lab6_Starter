@@ -3,6 +3,10 @@ class RecipeCard extends HTMLElement {
     // Part 1 Expose - TODO
 
     // You'll want to attach the shadow DOM here
+    super();
+
+    // Attach shaodow DOM
+    this.attachShadow({mode: 'open'});
   }
 
   set data(data) {
@@ -83,7 +87,7 @@ class RecipeCard extends HTMLElement {
         font-size: 12px;
       }
     `;
-    styleElem.innerHTML = style;
+    styleElem.innerHTML = styles;
 
     // Here's the root element that you'll want to attach all of your other elements to
     const card = document.createElement('article');
@@ -100,6 +104,100 @@ class RecipeCard extends HTMLElement {
     // created in the constructor()
 
     // Part 1 Expose - TODO
+    //console.log(Object.keys(data))
+    
+    // Attach styleElem and our card to the shadow root
+    this.shadowRoot.appendChild(styleElem);
+    this.shadowRoot.appendChild(card);
+    
+    // Create the thumbnail image and search for its key
+    // Then append it to the card
+    let recipeImg = document.createElement("img");
+    recipeImg.src = searchForKey(data, 'thumbnailUrl');
+    recipeImg.alt = "Recipe Title";
+    card.appendChild(recipeImg);
+
+    // Create the p tag used for the title and append it to the card
+    let title = document.createElement("p");
+    title.className = "title";
+    card.appendChild(title);
+
+    // Create the a tag used for the URL in the title and get the title text
+    let titleLink = document.createElement("a");
+    titleLink.href = searchForKey(data, 'url');
+    titleLink.innerHTML = searchForKey(data, 'headline');
+    title.appendChild(titleLink);
+
+    // Create the p tag for the organization and get the organization
+    let org = document.createElement("p");
+    org.innerHTML = getOrganization(data);
+    org.className = "organization";
+    card.appendChild(org);
+
+    // Create the div used as a container for all the rating related elements
+    let ratingContainer = document.createElement("div");
+    ratingContainer.className = "rating";
+    card.appendChild(ratingContainer);
+
+    // Create the span tag used to display the rating value
+    let ratingScore = document.createElement("span");
+    // If there is no rating value, display No Reviews
+    // Otherwise, display the rating value
+    if (searchForKey(data, 'ratingValue') == undefined) {
+      ratingScore.innerHTML = "No Reviews";
+    } else {
+      ratingScore.innerHTML = searchForKey(data, 'ratingValue');
+    }
+    ratingContainer.appendChild(ratingScore);
+
+    // Create the image tag for displaying rating stars
+    let ratingImg = document.createElement("img");
+    // Round the rating value and determine how many stars to display
+    let roundRating = Math.round(searchForKey(data, 'ratingValue'));
+    if (roundRating == 0) {
+      ratingImg.src = "assets/images/icons/0-star.svg";
+      ratingImg.alt = "0 stars";
+    } else if (roundRating == 1) {
+      ratingImg.src = "assets/images/icons/1-star.svg";
+      ratingImg.alt = "1 star";
+    } else if (roundRating == 2) {
+      ratingImg.src = "assets/images/icons/2-star.svg";
+      ratingImg.alt = "2 stars";
+    } else if (roundRating == 3) {
+      ratingImg.src = "assets/images/icons/3-star.svg";
+      ratingImg.alt = "3 stars";
+    } else if (roundRating == 4) {
+      ratingImg.src = "assets/images/icons/4-star.svg";
+      ratingImg.alt = "4 stars";
+    } else if (roundRating == 5) {
+      ratingImg.src = "assets/images/icons/5-star.svg";
+      ratingImg.alt = "5 stars";
+    }
+    ratingContainer.appendChild(ratingImg);
+
+    // Create the span for displaying the number of reviews made
+    let ratingCount = document.createElement("span");
+    // If there is no rating value, display nothing
+    if (searchForKey(data, 'ratingValue') == undefined) {
+      ratingCount.innerHTML = "";
+    } else {
+      ratingCount.innerHTML = "(" + searchForKey(data, 'ratingCount') + ")";
+    }
+    ratingContainer.appendChild(ratingCount);
+
+    // Create the time tag for displaying the total time for the recipe
+    let time = document.createElement("time");
+    // Call convertTime to format the total time
+    time.innerHTML = convertTime(searchForKey(data, 'totalTime'));
+    card.appendChild(time);
+
+    // Create the p tag used for displaying the ingredients list
+    let ingredients = document.createElement("p");
+    // Get the ingredients list and format it using createIngredientList
+    ingredients.innerHTML = createIngredientList(searchForKey(data, 'recipeIngredient'));
+    ingredients.className = "ingredients";
+    //ingredients.innerHTML = searchForKey(data, 'recipeIngredient');
+    card.appendChild(ingredients);
   }
 }
 
