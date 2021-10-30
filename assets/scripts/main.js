@@ -5,7 +5,10 @@
 const recipes = [
   'https://introweb.tech/assets/json/ghostCookies.json',
   'https://introweb.tech/assets/json/birthdayCake.json',
-  'https://introweb.tech/assets/json/chocolateChip.json'
+  'https://introweb.tech/assets/json/chocolateChip.json',
+  'assets/recipes/cornbread.json',
+  'assets/recipes/pumpkinBread.json',
+  'assets/recipes/meatball.json'
 ];
 
 // Once all of the recipes that were specified above have been fetched, their
@@ -79,6 +82,8 @@ function createRecipeCards() {
 
   // Part 1 Expose - TODO
 
+  let count = 0;
+
   // Loop through recipeData object
   for (const property in recipeData) {
     // Create <recipe-card>
@@ -89,6 +94,11 @@ function createRecipeCards() {
 
     // Attach <recipe-card> to main
     document.querySelector('main').appendChild(newRecipe);
+    
+    count++;
+    if (count == 3) {
+      break;
+    }
   }
 }
 
@@ -101,4 +111,68 @@ function bindShowMore() {
   // in the recipeData object where you stored them/
 
   // Part 2 Explore - TODO
+
+  // Select the Show more button
+  let show = document.querySelector("button");
+
+  // Keeps track of whether the button currently says Show more or Show less
+  let showStatus = false;
+
+  // Do something when the button is clicked
+  show.addEventListener('click', () => {
+
+    // If the showStatus is false, it means the button currently says Show more,
+    // so change it to Show less and update showStatus
+    if (showStatus == false) {
+      show.innerHTML = "Show less";
+      showStatus = true;
+
+      // Used to keep track of which card we're trying to build
+      let cardCount = 0;
+
+      for (const property in recipeData) {
+
+        // If the cardCount is less than 3, that means that we're currently 
+        // iterating over the data for our first three cards. We don't want to 
+        // create them again since we're already displaying them, so continue 
+        // with the loop.
+        if (cardCount < 3) {
+          cardCount++; 
+          continue;
+        } else {
+          // Create our three new cards
+          
+          // Create <recipe-card>
+          let newRecipe = document.createElement("recipe-card");
+
+          // Give each new card an ID based on cardCount so that we can access 
+          // them later
+          newRecipe.id = cardCount;
+      
+          // Get data into <recipe-card>
+          newRecipe.data = recipeData[property];
+      
+          // Attach <recipe-card> to main
+          document.querySelector('main').appendChild(newRecipe);
+          
+          cardCount++;
+        }
+      }
+    } else {
+      // If showStatus is true, that means that the button currently says Show 
+      // less, so we change it to Show more and update showStatus
+      show.innerHTML = "Show more";
+      showStatus = false;
+
+      // Access the three new cards by using the IDs we gave them earlier
+      let fourthCard = document.getElementById("3");
+      let fifthCard = document.getElementById("4");
+      let sixthCard = document.getElementById("5");
+
+      // Call remove() on the new cards to get rid of them
+      fourthCard.remove();
+      fifthCard.remove();
+      sixthCard.remove();
+    }
+  });
 }
